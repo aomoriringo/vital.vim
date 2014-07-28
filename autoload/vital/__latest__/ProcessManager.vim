@@ -32,6 +32,7 @@ function! s:_stop(i, ...)
   let p = s:_processes[a:i]
   call p.kill(get(a:000, 0, 0) ? g:vimproc#SIGKILL : g:vimproc#SIGTERM)
   " call p.waitpid()
+  call p.checkpid()
   unlet s:_processes[a:i]
   unlet s:state[a:i]
 endfunction
@@ -163,6 +164,7 @@ endfunction
 
 function! s:shutdown() dict
   call s:kill(self.label)
+  unlet! s:_processes2[self.label]
 endfunction
 
 function! s:reserve_wait(endpatterns) dict
@@ -226,7 +228,7 @@ endfunction
 function! s:_go(bulk_or_part, self)
   let self = a:self
   if self.is_idle()
-    throw 'Vital.ProcessManager: go_bulk() has nothing to do'
+    throw 'Vital.ProcessManager: go has nothing to do'
   endif
   let [msgkey, msgvalue] = self['*mailbox*'][0]
 
